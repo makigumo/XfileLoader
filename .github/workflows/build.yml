@@ -1,0 +1,41 @@
+name: build
+on: [push, pull_request]
+jobs:
+  build-macos:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os : [macos-11, macos-latest]
+        type: [xcode, cmake]
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Run Xcode - ${{ matrix.os }}
+        if: ${{ matrix.type == 'xcode' }}
+        run: |
+          xcodebuild -project XfileLoader.xcodeproj -scheme XfileLoader -configuration Release build
+
+      - name: Run CMake - ${{ matrix.os }}
+        if: ${{ matrix.type == 'cmake' }}
+        run: |
+          cmake . -Bbuild
+          cmake --build build --
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Run CMake (dockerized)
+        run: |
+          ./docker/linux-build.sh
