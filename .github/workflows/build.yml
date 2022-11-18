@@ -8,21 +8,24 @@ jobs:
       matrix:
         os : [macos-11, macos-latest]
         type: [xcode, cmake]
+        arch: [arm64, x86_64]
 
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      - name: Run Xcode - ${{ matrix.os }}
+      - name: Run Xcode - ${{ matrix.os }} / ${{ matrix.arch }}
         if: ${{ matrix.type == 'xcode' }}
         run: |
-          xcodebuild -project XfileLoader.xcodeproj -scheme XfileLoader -configuration Release build
+          xcodebuild -project XfileLoader.xcodeproj -scheme XfileLoader -arch ${{ matrix.arch }} -configuration Release build
 
-      - name: Run CMake - ${{ matrix.os }}
+      - name: Run CMake - ${{ matrix.os }} / ${{ matrix.arch }}
         if: ${{ matrix.type == 'cmake' }}
+        env:
+          CMAKE_OSX_ARCHITECTURES: ${{ matrix.arch }}
         run: |
           cmake . -Bbuild
           cmake --build build --
