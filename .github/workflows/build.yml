@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os : [macos-11, macos-latest]
+        os : [macos-latest]
         type: [xcode, cmake]
         arch: [arm64, x86_64]
 
